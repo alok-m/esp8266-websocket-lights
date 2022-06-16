@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id="currBrightness">128</p>
+    <input type="number" id="brightnessVal"></input>
+</body>
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+
+    const currVal = document.getElementById("currBrightness")
+    const inputVal = document.getElementById("brightnessVal")
+    
+    var socket = io();
+    
+    socket.on('connected', response => {
+        console.log("Connected")
+        console.log(response.data)
+        currVal.innerText = response.data
+        inputVal.value = response.data
+        // socket.emit('my event', {data: 'I\'m connected!'});
+    });
+
+    socket.on('brightness updated', response => {
+        console.log("Brightness Updated")
+        console.log(response.data)
+        currVal.innerText = response.data
+        inputVal.value = response.data
+    });
+    
+    socket.connect("http://127.0.0.1:5000")
+    
+    const updateBrightness = (event) => {
+        currVal.innerText = inputVal.value
+        socket.emit('brightness notify',{data: inputVal.value})
+    }
+    inputVal.addEventListener("keyup", updateBrightness);
+
+</script>
